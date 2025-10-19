@@ -4,481 +4,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎁 Món Quà 20/10 🎁</title>
+    <title>Chúc Mừng 20/10 (Mô phỏng video)</title>
+
     <style>
-        body,
-        html {
+        /* === CÀI ĐẶT CHUNG === */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fcefee;
+            /* Màu nền hồng nhạt */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to bottom, #ffe6f0 0%, #ffd9e6 50%, #ffffff 100%);
             overflow: hidden;
-        }
-
-        #container {
-            width: 100%;
-            height: 100%;
+            /* Tất cả các scene đều nằm chồng lên nhau */
             position: relative;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-            /* Đảm bảo nội dung chính nằm dưới ảnh góc */
         }
 
-        /* === CSS CHO PHONG BÌ THƯ === */
-        #envelope-container {
-            cursor: pointer;
-            position: relative;
-            text-align: center;
-        }
-
-        #envelope {
-            position: relative;
-            width: 220px;
-            height: 150px;
-            background: #ff7aa2;
-            border-radius: 10px;
-            transition: all 0.5s ease-in-out;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .envelope-body {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            background: #ff7aa2;
-            border-radius: 10px;
-            z-index: 10;
-        }
-
-        .envelope-flap {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 80px;
-            background: #ff9ebc;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            transform-origin: top;
-            transition: transform 0.5s ease-in-out;
-            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
-            z-index: 20;
-        }
-
-        .envelope-letter {
-            position: absolute;
-            top: 5px;
-            width: 200px;
-            height: 130px;
-            background: #fff;
-            border-radius: 5px;
-            left: 10px;
-            z-index: 5;
-            transition: all 0.5s 0.2s ease-in-out;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #e60073;
-        }
-
-        .envelope-letter p {
-            margin: 0;
-        }
-
-        #envelope-shadow {
-            width: 240px;
-            height: 20px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            margin: 10px auto 0;
-            transition: all 0.5s ease-in-out;
-        }
-
-        /* === ANIMATION MỞ THƯ === */
-        #envelope-container.open .envelope-flap {
-            transform: rotateX(180deg);
-            z-index: 1;
-        }
-
-        #envelope-container.open .envelope-letter {
-            transform: translateY(-100px);
-        }
-
-        #envelope-container.open #envelope {
-            transform: translateY(30px);
-        }
-
-        #envelope-container.open #envelope-shadow {
-            transform: scale(0.8);
-            opacity: 0.5;
-        }
-
-        /* === KẾT THÚC CSS PHONG BÌ === */
-
-        /* === LỜI CHÚC (ĐÃ THÊM NỀN TRẮNG) === */
-        #messages {
-            position: absolute;
-            top: 25%;
-            width: 85%;
-            max-width: 650px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            z-index: 5;
-            /* Đảm bảo lời chúc nằm trên nền mờ nhưng dưới ảnh góc */
-        }
-
-        .line {
+        /* Lớp để ẩn/hiện các cảnh */
+        .hidden {
+            display: none !important;
             opacity: 0;
-            margin: 10px 0;
-            font-size: 20px;
-            line-height: 1.6;
-            font-weight: bold;
-            color: #e60073;
-            transition: opacity 1.5s, transform 1.5s;
-            transform: translateY(20px);
         }
 
-        .line.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* === KẾT THÚC CSS LỜI CHÚC === */
-
-        #extra-link {
-            display: none;
+        /* Hiệu ứng mờ dần/hiện dần */
+        .scene {
             position: absolute;
-            bottom: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 22px;
-            background: #ff4d94;
-            color: #fff;
-            border-radius: 12px;
-            text-decoration: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease;
+        }
+
+        /* === SCENE 1: BÔNG HOA BẰNG ẢNH === */
+        #scene1-rose {
+            cursor: pointer;
+            text-align: center;
+            animation: show-rose 1.2s ease-in-out forwards;
+        }
+        
+        @keyframes show-rose {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .rose-image {
+            width: 200px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        #scene1-rose:active .rose-image {
+            transform: scale(1.08);
+        }
+
+        .click-me {
+            font-size: 24px;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 6;
-            /* Đảm bảo nút nằm trên lời chúc */
+            color: #d6336c;
+            opacity: 0;
+            animation: fade-in 1s 1.2s forwards;
         }
 
-        #extra-link:hover {
-            background: #e60073;
+
+        /* === SCENE 2: PHONG BÌ & HIỆU ỨNG === */
+        #scene2-envelope {
+            position: relative;
         }
 
-        #gift-popup {
-            display: none;
-            position: fixed;
+        /* === HIỆU ỨNG HOA RƠI (ĐÃ THÊM LẠI) === */
+        .falling-flowers {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 5; /* Nằm trên chữ và trái tim */
+            overflow: hidden;
+        }
+
+        .falling-flowers .flower {
+            position: absolute;
+            top: -10vh; /* Bắt đầu từ trên trời */
+            font-size: 20px;
+            opacity: 0.8;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        .falling-flowers .flower:nth-child(even) {
+            animation-name: fall-reverse; /* Cho rơi ngược hướng */
+        }
+
+        @keyframes fall {
+            from {
+                transform: translateY(0vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(110vh) rotate(360deg) translateX(15vw);
+            }
+        }
+        
+        @keyframes fall-reverse {
+            from {
+                transform: translateY(0vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(110vh) rotate(-360deg) translateX(-15vw);
+            }
+        }
+        /* === HẾT HIỆU ỨNG HOA RƠI === */
+
+        
+        /* CHỮ VÒNG CUNG VÀ TRÁI TIM */
+        .arc-text {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #c2185b;
+            pointer-events: none;
+            z-index: 1; /* Nằm dưới hoa rơi */
+        }
+
+        .arc-text span {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: 0 200px;
+        }
+
+        .heart-path-container {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 1; /* Nằm dưới hoa rơi */
+        }
+
+        .heart-svg-path {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        #heart-path-stroke {
+            stroke: #d6336c;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4 4; 
+        }
+
+        /* Hoa hồng chạy trên viền */
+        .moving-rose {
+            position: absolute;
+            font-size: 24px;
+            offset-path: path("M225,100 C225,50 175,20 125,70 C75,20 25,50 25,100 C25,150 125,250 225,100 Z");
+            animation: move-on-path 6s linear infinite;
+        }
+
+        .moving-rose.rose2 {
+            animation-delay: -3s;
+        }
+
+        @keyframes move-on-path {
+            from {
+                offset-distance: 0%;
+            }
+            to {
+                offset-distance: 100%;
+            }
+        }
+
+
+        /* Phong bì */
+        .envelope-wrapper {
+            position: relative;
+            z-index: 10; /* Nằm trên cùng */
+            cursor: pointer;
+            animation: float 2s ease-in-out infinite; 
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .envelope {
+            position: relative;
+            width: 220px;
+            height: 150px;
+            background-color: #f7cac9;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .envelope-flap {
+            width: 0;
+            height: 0;
+            border-left: 110px solid transparent;
+            border-right: 110px solid transparent;
+            border-top: 80px solid #f2a29c;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .envelope-letter {
+            position: absolute;
+            background-color: white;
+            width: 200px;
+            height: 130px;
+            top: 5px;
+            left: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding-top: 15px;
+            transition: transform 0.5s ease-in-out;
+            color: #c2185b;
+            font-weight: bold;
+        }
+
+        .envelope-letter::before {
+            content: '❤️';
+            font-size: 24px;
+        }
+
+        .envelope-wrapper:hover .envelope-letter {
+            transform: translateY(-60px);
+        }
+
+
+        /* === SCENE 3: MODAL / TẤM THIỆP (ĐÃ XÓA ẢNH) === */
+        .modal {
+            position: fixed;
             z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
         }
 
-        #popup-content {
-            position: relative;
-            background: #fff;
+        .modal-content {
+            background-color: #fff;
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            animation: fade-in 0.5s;
+            position: relative;
         }
 
-        #close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 24px;
-            color: #aaa;
-            cursor: pointer;
-            font-weight: bold;
+        .modal-text {
+            flex: 1;
         }
 
-        #close-btn:hover {
+        .modal-text h2 {
+            color: #d6336c;
+            border-bottom: 2px solid #fcefee;
+            padding-bottom: 5px;
+            margin-top: 0;
+        }
+
+        #typing-text {
+            white-space: pre-wrap;
+            border-right: .15em solid #d6336c;
+            animation: blink-caret .75s step-end infinite;
+            min-height: 1.2em;
+            font-size: 1.1em;
+            line-height: 1.6;
             color: #333;
         }
 
-        #pointer {
+        .close-btn {
             position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 30px solid #c0392b;
-            z-index: 10;
-        }
-
-        #spin-btn {
-            margin-top: 20px;
-            padding: 12px 25px;
-            background: #ff4d94;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
+            top: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 28px;
             font-weight: bold;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            cursor: pointer;
         }
 
-        #spin-btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+        .close-btn:hover {
+            color: #000;
         }
 
-        canvas {
-            display: block;
-            transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        .falling {
-            position: absolute;
-            top: -5vh;
-            font-size: 20px;
-            animation: fall linear infinite;
-            user-select: none;
-            z-index: 0;
-            /* Đảm bảo hiệu ứng rơi nằm dưới cùng */
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(105vh) rotate(360deg);
+        @keyframes fade-in {
+            from {
                 opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
-        /* === [MỚI] CSS CHO 4 ẢNH GÓC === */
-        .corner-image-container {
-            position: fixed;
-            z-index: 1000;
-            /* Đảm bảo ảnh luôn nằm trên cùng */
-            width: 150px;
-            height: 150px;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        @keyframes blink-caret {
+            from, to {
+                border-color: transparent
+            }
+            50% {
+                border-color: #d6336c;
+            }
         }
-
-        .corner-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        #top-left {
-            top: 20px;
-            left: 20px;
-        }
-
-        #top-right {
-            top: 20px;
-            right: 20px;
-        }
-
-        #bottom-left {
-            bottom: 20px;
-            left: 20px;
-        }
-
-        #bottom-right {
-            bottom: 20px;
-            right: 20px;
-        }
-
-        /* === KẾT THÚC CSS ẢNH GÓC === */
     </style>
 </head>
 
 <body>
 
-    <div class="corner-image-container" id="top-left">
-        <img src="https://i.postimg.cc/MH0QXBpF/g.jpg" alt="Ảnh góc trên trái">
+    <div id="scene1-rose" class="scene">
+        
+        <img src="https://i.postimg.cc/nrJTmmn5/Screenshot-2025-10-19-233044.png" alt="Bông hoa" class="rose-image">
+
+        <p class="click-me">Click me now!</p>
     </div>
-    <div class="corner-image-container" id="top-right">
-        <img src="https://i.postimg.cc/4H7GctpR/Image-2.png" alt="Ảnh góc trên phải">
-    </div>
-    <div class="corner-image-container" id="bottom-left">
-        <img src="https://i.postimg.cc/87VGF75y/Image-3.png" alt="Ảnh góc dưới trái">
-    </div>
-    <div class="corner-image-container" id="bottom-right">
-        <img src="https://i.postimg.cc/njMf87RC/Image-4.png" alt="Ảnh góc dưới phải">
-    </div>
-    <div id="container">
-        <div id="envelope-container">
-            <div id="envelope">
+
+    <div id="scene2-envelope" class="scene hidden">
+
+        <div class="falling-flowers">
+            <div class="flower" style="left: 10%; animation-delay: 0s; animation-duration: 10s;">🌸</div>
+            <div class="flower" style="left: 20%; animation-delay: -5s; animation-duration: 12s;">🌹</div>
+            <div class="flower" style="left: 30%; animation-delay: -2s; animation-duration: 8s;">🌸</div>
+            <div class="flower" style="left: 50%; animation-delay: -8s; animation-duration: 15s;">🌹</div>
+            <div class="flower" style="left: 70%; animation-delay: -1s; animation-duration: 9s;">🌸</div>
+            <div class="flower" style="left: 85%; animation-delay: -6s; animation-duration: 11s;">🌹</div>
+        </div>
+        
+        <div class="arc-text" id="arc-text-top"></div>
+        <div class="arc-text" id="arc-text-bottom"></div>
+        
+        <div class="heart-path-container">
+            <svg class="heart-svg-path" viewBox="0 0 250 270">
+                <path id="heart-path-stroke"
+                    d="M225,100 C225,50 175,20 125,70 C75,20 25,50 25,100 C25,150 125,250 225,100 Z" />
+            </svg>
+            <div class="moving-rose rose1">🌹</div>
+            <div class="moving-rose rose2">🌹</div>
+        </div>
+
+
+        <div class="envelope-wrapper" id="openModalBtn">
+            <div class="envelope">
                 <div class="envelope-flap"></div>
-                <div class="envelope-body"></div>
                 <div class="envelope-letter">
-                    <p>Nhấn để mở thư 💌</p>
+                    <p>Happy Women's Day!</p>
                 </div>
             </div>
-            <div id="envelope-shadow"></div>
         </div>
-        <div id="messages"></div> <a id="extra-link" href="#">🌟 Mở quà bất ngờ 🌟</a>
     </div>
 
-    <div id="gift-popup">
-        <div id="popup-content">
-            <span id="close-btn">&times;</span>
-            <h2>Quay trúng thưởng 🎁</h2>
-            <div style="position: relative; width: 300px; margin: 0 auto;">
-                <div id="pointer"></div>
-                <canvas id="wheel" width="300" height="300"></canvas>
+    <div id="myModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="closeCard">&times;</span>
+
+            <div class="modal-text">
+                <h2>Nhân dịp ngày 20/10 ❤️</h2>
+                <p id="typing-text"></p>
             </div>
-            <button id="spin-btn">Quay</button>
-            <div id="wheel-result" style="margin-top: 20px; font-weight: bold; color: #e60073; font-size: 18px;"></div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        $(function () {
-            // --- PHẦN THIẾT LẬP GIẢI THƯỞNG VÀ TỶ LỆ ---
-            const prizes = [
-                { name: 'Bình thường 🎉', color: '#a0c4ff', weight: 45 },
-                { name: 'Plus 🌟', color: '#ffd6a5', weight: 35 },
-                { name: 'Pro 🏆', color: '#ffadad', weight: 25 }
-            ];
+        // JavaScript (Điều khiển)
 
-            // --- PHẦN CODE VÒNG QUAY (Đã sửa lỗi quay sai + chữ lộn ngược) ---
-            const wheelCanvas = document.getElementById('wheel');
-            const ctx = wheelCanvas.getContext('2d');
-            let currentRotation = 0;
-            const visualSegments = [
-                prizes[0], prizes[1], prizes[2], prizes[0], prizes[1],
-                prizes[0], prizes[2], prizes[0], prizes[1], prizes[0]
-            ];
-            const segCount = visualSegments.length;
-            const anglePerSeg = 2 * Math.PI / segCount;
-            const degreesPerSeg = 360 / segCount;
+        // === LẤY CÁC PHẦN TỬ ===
+        var scene1 = document.getElementById("scene1-rose");
+        var scene2 = document.getElementById("scene2-envelope");
+        var modal = document.getElementById("myModal");
+        var openModalBtn = document.getElementById("openModalBtn");
+        var closeModalBtn = document.getElementById("closeCard");
 
-            function drawWheel() {
-                ctx.clearRect(0, 0, 300, 300);
-                visualSegments.forEach((segment, i) => {
-                    const angle = i * anglePerSeg + anglePerSeg / 2;
-                    ctx.beginPath();
-                    ctx.moveTo(150, 150);
-                    ctx.arc(150, 150, 150, i * anglePerSeg, (i + 1) * anglePerSeg);
-                    ctx.closePath();
-                    ctx.fillStyle = segment.color;
-                    ctx.fill();
-                    ctx.save();
-                    ctx.translate(150, 150);
-                    ctx.rotate(angle);
-                    ctx.fillStyle = '#333';
-                    ctx.font = 'bold 14px Segoe UI';
-                    if (angle > Math.PI * 0.5 && angle < Math.PI * 1.5) {
-                        ctx.rotate(Math.PI);
-                        ctx.textAlign = 'left';
-                        ctx.fillText(segment.name, -140, 5);
-                    } else {
-                        ctx.textAlign = 'right';
-                        ctx.fillText(segment.name, 140, 5);
-                    }
-                    ctx.restore();
-                });
+        // === ĐIỀU KHIỂN CHUYỂN CẢNH ===
+
+        // 1. Bấm vào hoa (Scene 1) -> Chuyển sang Scene 2
+        scene1.onclick = function () {
+            scene1.style.opacity = '0'; // Mờ dần
+            setTimeout(() => {
+                scene1.classList.add('hidden'); // Ẩn đi
+                scene2.classList.remove('hidden'); // Hiện ra
+                scene2.style.opacity = '1'; // Hiện dần
+            }, 500); // 0.5 giây
+        }
+
+        // 2. Bấm vào phong bì (Scene 2) -> Mở Tấm thiệp (Modal)
+        openModalBtn.onclick = function () {
+            modal.classList.remove("hidden");
+            modal.style.display = 'flex';
+            startTyping(); // Bắt đầu gõ chữ
+        }
+
+        // 3. Đóng Tấm thiệp
+        closeModalBtn.onclick = function () {
+            modal.classList.add("hidden");
+            modal.style.display = 'none';
+        }
+        window.onclick = function (event) {
+            // Nếu bấm ra ngoài nền mờ
+            if (event.target == modal) {
+                modal.classList.add("hidden");
+                modal.style.display = 'none';
             }
+        }
 
-            function getWeightedResult() {
-                const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
-                let random = Math.random() * totalWeight;
-                for (const prize of prizes) {
-                    if (random < prize.weight) return prize;
-                    random -= prize.weight;
-                }
+        // === HIỆU ỨNG GÕ CHỮ (Lời chúc dài của bạn) ===
+        var textToType = "Ngày 20/10 là dịp đặc biệt để tôn vinh và gửi lời tri ân đến những người phụ nữ Việt Nam – những bông hoa tươi đẹp luôn mang đến yêu thương, hi sinh và nguồn cảm hứng trong cuộc sống. Lời chúc 20/10 không chỉ là những câu nói đơn giản, mà còn chứa đựng sự trân trọng và biết ơn sâu sắc dành cho mẹ, cô, chị, hay bạn gái – những người đã và đang làm cho thế giới quanh ta trở nên tốt đẹp hơn. Đó là lời nhắn gửi yêu thương, mong họ luôn mạnh mẽ, hạnh phúc và tự tin tỏa sáng trên con đường của mình. Dù chỉ là những lời chúc nhỏ bé, nhưng nó mang ý nghĩa lớn lao – giúp lan tỏa niềm vui, gắn kết tình cảm và làm cho ngày 20/10 trở nên thật ấm áp và ý nghĩa";
+        var speed = 30; // Tốc độ gõ (ms)
+        var i = 0;
+
+        function startTyping() {
+            i = 0; // Reset lại
+            document.getElementById("typing-text").innerHTML = ""; // Xóa chữ cũ
+            typeWriter();
+        }
+
+        function typeWriter() {
+            if (i < textToType.length) {
+                document.getElementById("typing-text").innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, speed); 
             }
+        }
 
-            // --- HIỂN THỊ LỜI CHÚC (ĐÃ KHÔI PHỤC) ---
-            function showMessage() {
-                $('#messages').css('display', 'block'); // Hiện div#messages
-                $('#messages').empty();
-                var $line = $('<div class="line">Nhân dịp 20/10,<br>Chúc bạn iu của tui mau ăn chóng lớn và ngoan ngoãn nhé.<br>Luôn vui vẻ và nở nụ cười trên môi, không được tiêu cực.<br>Bạn iu ngày càng xinh xắn, dễ thương, mong bạn có tất cả trừ vất vả ạ.<br><strong>🌷 Tui thương bạn 🌷</strong></div>');
-                $('#messages').append($line);
-                setTimeout(() => $line.addClass('visible'), 500);
-            }
+        // === HIỆU ỨNG CHỮ TRÁI TIM ===
+        function setupArcText() {
+            var textTop = "Happy Vietnamese Women's Day";
+            var textBottom = "From TIENDEV With 20/10!";
+            var arcTopEl = document.getElementById('arc-text-top');
+            var arcBottomEl = document.getElementById('arc-text-bottom');
 
-            // === LOGIC MỞ THƯ (ĐÃ CẬP NHẬT) ===
-            $('#envelope-container').one('click', function () {
-                var $this = $(this);
+            var radiusTop = 180; 
+            var angleStepTop = 10;
+            var startAngleTop = -135; 
 
-                // 1. Thêm class 'open' để kích hoạt animation
-                $this.addClass('open');
-
-                // 2. Đợi animation mở thư xong
-                setTimeout(function () {
-                    // Làm mờ lá thư
-                    $this.fadeOut();
-
-                    // Hiển thị lời chúc
-                    showMessage();
-
-                    // Hiển thị nút "Mở quà bất ngờ" sau khi lời chúc hiện ra
-                    $('#extra-link').delay(1000).fadeIn();
-                }, 1500); // Đợi 1.5 giây cho animation mở thư
+            textTop.split('').forEach((char, idx) => {
+                var angle = startAngleTop + (idx * angleStepTop);
+                var span = document.createElement('span');
+                span.innerText = char;
+                span.style.transform = `rotate(${angle}deg) translate(0, -${radiusTop}px)`;
+                arcTopEl.appendChild(span);
             });
 
-            // === BẤM QUAY (ĐÃ SỬA LỖI QUAY SAI KẾT QUẢ) ===
-            $('#spin-btn').click(function () {
-                $(this).prop('disabled', true);
-                $('#wheel-result').text('');
+            var radiusBottom = 180; 
+            var angleStepBottom = 10;
+            var startAngleBottom = 45; 
 
-                const winningPrize = getWeightedResult();
-
-                let possibleStopIndexes = [];
-                visualSegments.forEach((segment, index) => {
-                    if (segment.name === winningPrize.name) {
-                        possibleStopIndexes.push(index);
-                    }
-                });
-
-                const targetIndex = possibleStopIndexes[Math.floor(Math.random() * possibleStopIndexes.length)];
-                const centerAngle = (targetIndex * degreesPerSeg) + (degreesPerSeg / 2);
-                const targetAngle = (360 * 6) + 270 - centerAngle;
-
-                currentRotation += targetAngle;
-
-                wheelCanvas.style.transform = `rotate(${currentRotation}deg)`;
-
-                setTimeout(() => {
-                    $('#wheel-result').text("Bạn trúng: " + winningPrize.name);
-                    $(this).prop('disabled', false);
-                }, 5000);
+            textBottom.split('').forEach((char, idx) => {
+                var angle = startAngleBottom + (idx * angleStepBottom);
+                var span = document.createElement('span');
+                span.innerText = char;
+                span.style.transform = `rotate(${angle}deg) translate(0, -${radiusBottom}px) rotate(180deg)`;
+                arcBottomEl.appendChild(span);
             });
+        }
 
-            // --- CÁC HÀM SỰ KIỆN KHÁC ---
-            $('#extra-link').click(function (e) { e.preventDefault(); $('#gift-popup').css('display', 'flex').hide().fadeIn(); });
-            $('#close-btn').click(function () { $('#gift-popup').fadeOut(); });
+        // Chạy hàm này khi tải trang
+        setupArcText();
 
-            function createFalling() {
-                const item = $('<div class="falling"></div>').text(['❤️', '🌸', '✨'][Math.floor(Math.random() * 3)]);
-                item.css({ left: Math.random() * window.innerWidth, 'font-size': (Math.random() * 12 + 16) + 'px', 'animation-duration': (Math.random() * 5 + 4) + 's' });
-                $('body').append(item);
-                setTimeout(() => item.remove(), 9000);
-            }
-            setInterval(createFalling, 250);
-            drawWheel();
-        });
     </script>
 </body>
 
