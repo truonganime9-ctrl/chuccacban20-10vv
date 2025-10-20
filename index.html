@@ -1,494 +1,583 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chúc Mừng 20/10 (Mô phỏng video)</title>
+    <title>Chúc Mừng Ngày Phụ Nữ!</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 
     <style>
-        /* === CÀI ĐẶT CHUNG === */
+        :root {
+            --bg-start: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); /* Nền đỏ gradient */
+            --bg-main: #fbe0e6; /* Nền hồng nhạt cho bao thư */
+            --bg-dark: #2c3e50; /* Nền tối khi mở thiệp */
+            
+            --envelope-color: #ffb6c1;
+            --envelope-flap-color: #ff9a9e;
+            --card-color: #ffffff;
+            --font-cursive: 'Great Vibes', cursive;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #fcefee;
-            /* Màu nền hồng nhạt */
+            margin: 0;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            /* Tất cả các scene đều nằm chồng lên nhau */
-            position: relative;
+            transition: background 1s ease;
+            background: var(--bg-start);
         }
 
-        /* Lớp để ẩn/hiện các cảnh */
         .hidden {
             display: none !important;
-            opacity: 0;
         }
 
-        /* Hiệu ứng mờ dần/hiện dần */
-        .scene {
-            position: absolute;
+        /* 0. Màn hình Loading */
+        #loading-screen {
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        #loading-screen p {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        /* 1. Màn hình Bắt đầu */
+        #start-screen {
+            text-align: center;
+            color: white;
+            animation: fadeIn 0.5s;
+        }
+        #start-screen h1 {
+            font-family: var(--font-cursive);
+            font-size: 5rem;
+            font-weight: normal;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 0;
+        }
+        #start-button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 25px;
+            background-color: white;
+            color: var(--envelope-flap-color);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #start-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* 2. Màn hình chính */
+        #main-content {
+            position: relative;
             width: 100%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            transition: opacity 0.5s ease;
         }
-
-        /* === SCENE 1: BÔNG HOA BẰNG ẢNH === */
-        #scene1-rose {
+        #music-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        #music-controls button {
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
             cursor: pointer;
-            text-align: center;
-            animation: show-rose 1.2s ease-in-out forwards;
-        }
-        
-        @keyframes show-rose {
-            from {
-                opacity: 0;
-                transform: scale(0.7);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            margin-left: 10px;
         }
 
-        .rose-image {
-            width: 200px;
-            height: auto;
-            transition: transform 0.3s ease;
-        }
-
-        #scene1-rose:active .rose-image {
-            transform: scale(1.08);
-        }
-
-        .click-me {
-            font-size: 24px;
-            font-weight: bold;
-            color: #d6336c;
-            opacity: 0;
-            animation: fade-in 1s 1.2s forwards;
-        }
-
-
-        /* === SCENE 2: PHONG BÌ & HIỆU ỨNG === */
-        #scene2-envelope {
-            position: relative;
-        }
-
-        /* === HIỆU ỨNG HOA RƠI (ĐÃ THÊM LẠI) === */
-        .falling-flowers {
+        /* --- HIỆU ỨNG HẠT --- */
+        .particle-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 5; /* Nằm trên chữ và trái tim */
             overflow: hidden;
+            z-index: 1;
         }
 
-        .falling-flowers .flower {
+        .particle {
             position: absolute;
-            top: -10vh; /* Bắt đầu từ trên trời */
+            border-radius: 50%;
+        }
+        
+        /* Hạt loại 1: Tim rơi (Nền hồng) */
+        .particle.heart {
+            background-color: transparent;
             font-size: 20px;
-            opacity: 0.8;
-            animation-name: fall;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
+        }
+        .particle.heart::before {
+            content: '❤️';
+            color: #ff4757;
+        }
+        .particle.circle {
+            background-color: #ff9a9e;
+            opacity: 0.5;
         }
 
-        .falling-flowers .flower:nth-child(even) {
-            animation-name: fall-reverse; /* Cho rơi ngược hướng */
+        /* Hạt loại 2: Sao lấp lánh (Nền tối) */
+        .particle.star {
+            color: #ffd700;
+            font-size: 10px;
+            /* --- CSS SỬA ---: Xóa 'animation' khỏi đây, JS sẽ xử lý */
         }
-
-        @keyframes fall {
-            from {
-                transform: translateY(0vh) rotate(0deg);
-            }
-            to {
-                transform: translateY(110vh) rotate(360deg) translateX(15vw);
-            }
+        .particle.star::before {
+            content: '✦';
         }
+        .particle.sparkle-heart {
+            font-size: 20px;
+            /* --- CSS SỬA ---: Xóa 'animation' khỏi đây, JS sẽ xử lý */
+        }
+         .particle.sparkle-heart::before {
+            content: '❤️';
+            color: #ff4757;
+            text-shadow: 0 0 5px #ff4757;
+         }
         
-        @keyframes fall-reverse {
-            from {
-                transform: translateY(0vh) rotate(0deg);
-            }
-            to {
-                transform: translateY(110vh) rotate(-360deg) translateX(-15vw);
-            }
-        }
-        /* === HẾT HIỆU ỨNG HOA RƠI === */
-
-        
-        /* CHỮ VÒNG CUNG VÀ TRÁI TIM */
-        .arc-text {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #c2185b;
-            pointer-events: none;
-            z-index: 1; /* Nằm dưới hoa rơi */
-        }
-
-        .arc-text span {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform-origin: 0 200px;
-        }
-
-        .heart-path-container {
-            position: absolute;
-            width: 450px;
-            height: 450px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-            z-index: 1; /* Nằm dưới hoa rơi */
-        }
-
-        .heart-svg-path {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
-
-        #heart-path-stroke {
-            stroke: #d6336c;
-            stroke-width: 2;
-            fill: none;
-            stroke-dasharray: 4 4; 
-        }
-
-        /* Hoa hồng chạy trên viền */
-        .moving-rose {
-            position: absolute;
-            font-size: 24px;
-            offset-path: path("M225,100 C225,50 175,20 125,70 C75,20 25,50 25,100 C25,150 125,250 225,100 Z");
-            animation: move-on-path 6s linear infinite;
-        }
-
-        .moving-rose.rose2 {
-            animation-delay: -3s;
-        }
-
-        @keyframes move-on-path {
-            from {
-                offset-distance: 0%;
-            }
-            to {
-                offset-distance: 100%;
-            }
-        }
-
-
-        /* Phong bì */
-        .envelope-wrapper {
+        /* Bao thư */
+        #envelope-wrapper {
             position: relative;
-            z-index: 10; /* Nằm trên cùng */
+            z-index: 5;
             cursor: pointer;
-            animation: float 2s ease-in-out infinite; 
         }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
-        }
-
-        .envelope {
+        #envelope {
             position: relative;
             width: 220px;
             height: 150px;
-            background-color: #f7cac9;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: var(--envelope-color);
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.5s;
         }
-
-        .envelope-flap {
+        #envelope-wrapper:hover #envelope {
+            transform: scale(1.1);
+        }
+        .flap {
+            position: absolute;
             width: 0;
             height: 0;
             border-left: 110px solid transparent;
             border-right: 110px solid transparent;
-            border-top: 80px solid #f2a29c;
-            position: absolute;
+            border-top: 80px solid var(--envelope-flap-color);
             top: 0;
             left: 0;
+            z-index: 3;
+            transform-origin: top center;
+            transition: transform 0.5s ease-in-out;
         }
-
-        .envelope-letter {
+        .letter {
             position: absolute;
             background-color: white;
             width: 200px;
             height: 130px;
-            top: 5px;
+            top: 10px;
             left: 10px;
             border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            padding-top: 15px;
+            z-index: 1;
             transition: transform 0.5s ease-in-out;
-            color: #c2185b;
-            font-weight: bold;
+        }
+        #envelope-wrapper.open .flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+        #envelope-wrapper.open .letter {
+            transform: translateY(-80px);
         }
 
-        .envelope-letter::before {
-            content: '❤️';
-            font-size: 24px;
-        }
-
-        .envelope-wrapper:hover .envelope-letter {
-            transform: translateY(-60px);
-        }
-
-
-        /* === SCENE 3: MODAL / TẤM THIỆP (ĐÃ XÓA ẢNH) === */
-        .modal {
+        /* 3. Thiệp (Modal) */
+        #card-modal {
             position: fixed;
-            z-index: 100;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
+        .card-content {
+            background-color: var(--card-color);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 80%;
             max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            animation: fade-in 0.5s;
+            text-align: center;
             position: relative;
+            z-index: 101;
+            transform: scale(0.5);
+            transition: transform 0.5s;
         }
-
-        .modal-text {
-            flex: 1;
+        #card-modal:not(.hidden) {
+            opacity: 1;
         }
-
-        .modal-text h2 {
-            color: #d6336c;
-            border-bottom: 2px solid #fcefee;
-            padding-bottom: 5px;
-            margin-top: 0;
+        #card-modal:not(.hidden) .card-content {
+            transform: scale(1);
         }
-
-        #typing-text {
-            white-space: pre-wrap;
-            border-right: .15em solid #d6336c;
-            animation: blink-caret .75s step-end infinite;
-            min-height: 1.2em;
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .close-btn {
+        #close-button {
             position: absolute;
             top: 10px;
-            right: 20px;
+            right: 15px;
+            font-size: 2rem;
             color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+        #close-button:hover {
+            color: #ff0000;
+        }
+        .card-content h2 {
+            font-family: var(--font-cursive);
+            font-size: 3rem;
+            font-weight: normal;
+            color: #ff4757;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .card-content .date {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .greeting {
+            font-size: 1.1rem;
+            color: #333;
+            text-align: left;
+            margin: 0;
         }
 
-        .close-btn:hover {
-            color: #000;
+        /* Hiệu ứng gõ chữ */
+        #typing-text {
+            font-size: 1.1rem;
+            color: #333;
+            min-height: 120px;
+            border-right: 3px solid #333;
+            animation: blinkCursor 0.7s infinite;
+            white-space: pre-wrap;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        #typing-text.done {
+            border-right: none;
+            animation: none;
         }
 
-        @keyframes fade-in {
-            from {
+        /* Danh sách lời chúc */
+        .wishes-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        .wishes-list.visible {
+            opacity: 1;
+        }
+        .wishes-list li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        .wishes-list li::before {
+            content: '';
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+        .wishes-list li:nth-child(1)::before { content: '🌸'; }
+        .wishes-list li:nth-child(2)::before { content: '🌟'; }
+        .wishes-list li:nth-child(3)::before { content: '💖'; }
+        .wishes-list li:nth-child(4)::before { content: '☀️'; }
+
+        .signature {
+            text-align: right;
+            margin-top: 20px;
+            font-style: italic;
+            color: #555;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes blinkCursor {
+            from { border-right-color: #333; }
+            to { border-right-color: transparent; }
+        }
+        
+        /* Keyframe cho tim rơi */
+        @keyframes float-down {
+            0% {
+                transform: translateY(-10vh) translateX(0) scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--x-end)) scale(0.8);
                 opacity: 0;
-                transform: scale(0.9);
             }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        }
+        
+        /* Keyframe cho sao lấp lánh */
+        @keyframes twinkle {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1.2); }
         }
 
-        @keyframes blink-caret {
-            from, to {
-                border-color: transparent
-            }
-            50% {
-                border-color: #d6336c;
-            }
-        }
     </style>
 </head>
-
 <body>
 
-    <div id="scene1-rose" class="scene">
-        
-        <img src="https://i.postimg.cc/nrJTmmn5/Screenshot-2025-10-19-233044.png" alt="Bông hoa" class="rose-image">
+    <div class="particle-container hidden" id="hearts-container"></div>
+    
+    <div class="particle-container hidden" id="stars-container"></div>
 
-        <p class="click-me">Click me now!</p>
+
+    <div id="loading-screen">
+        <p>Đang chuẩn bị điều bất ngờ...</p>
     </div>
 
-    <div id="scene2-envelope" class="scene hidden">
+    <div id="start-screen" class="hidden">
+        <h1>Happy Women's Day</h1>
+        <p>Chạm để mở món quà đặc biệt</p>
+        <button id="start-button">Bắt đầu</button>
+    </div>
 
-        <div class="falling-flowers">
-            <div class="flower" style="left: 10%; animation-delay: 0s; animation-duration: 10s;">🌸</div>
-            <div class="flower" style="left: 20%; animation-delay: -5s; animation-duration: 12s;">🌹</div>
-            <div class="flower" style="left: 30%; animation-delay: -2s; animation-duration: 8s;">🌸</div>
-            <div class="flower" style="left: 50%; animation-delay: -8s; animation-duration: 15s;">🌹</div>
-            <div class="flower" style="left: 70%; animation-delay: -1s; animation-duration: 9s;">🌸</div>
-            <div class="flower" style="left: 85%; animation-delay: -6s; animation-duration: 11s;">🌹</div>
+    <div id="main-content" class="hidden">
+        <div id="music-controls">
+            <button id="play-pause-btn">▶️</button>
+            <button id="mute-btn">🔊</button>
         </div>
-        
-        <div class="arc-text" id="arc-text-top"></div>
-        <div class="arc-text" id="arc-text-bottom"></div>
-        
-        <div class="heart-path-container">
-            <svg class="heart-svg-path" viewBox="0 0 250 270">
-                <path id="heart-path-stroke"
-                    d="M225,100 C225,50 175,20 125,70 C75,20 25,50 25,100 C25,150 125,250 225,100 Z" />
-            </svg>
-            <div class="moving-rose rose1">🌹</div>
-            <div class="moving-rose rose2">🌹</div>
-        </div>
-
-
-        <div class="envelope-wrapper" id="openModalBtn">
-            <div class="envelope">
-                <div class="envelope-flap"></div>
-                <div class="envelope-letter">
-                    <p>Happy Women's Day!</p>
-                </div>
+        <div id="envelope-wrapper">
+            <div id="envelope">
+                <div class="letter"></div>
+                <div class="flap"></div>
             </div>
         </div>
     </div>
 
-    <div id="myModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn" id="closeCard">&times;</span>
+    <div id="card-modal" class="hidden">
+        <div class="card-content">
+            <span id="close-button">&times;</span>
+            
+            <h2>Happy Women's Day 2025! 💝</h2>
+            <p class="date">Ngày 20 tháng 10 năm 2025</p>
+            
+            <p class="greeting">Thân gửi</p>
 
-            <div class="modal-text">
-                <h2>Nhân dịp ngày 20/10 ❤️</h2>
-                <p id="typing-text"></p>
-            </div>
+            <p id="typing-text"></p>
+            
+            <ul class="wishes-list" id="wishes-list">
+                <li>Chúc bạn luôn xinh đẹp, rạng ngời như những đóa hoa tươi thắm</li>
+                <li>Chúc bạn thành công rực rỡ trên con đường sự nghiệp</li>
+                <li>Chúc bạn tìm được hạnh phúc trọn vẹn trong tình yêu</li>
+                <li>Chúc bạn luôn vui vẻ, tràn đầy năng lượng mỗi ngày</li>
+            </ul>
+
+            <p class="signature">
+                With love and appreciation,<br>
+                TIEDNEV
+            </p>
         </div>
     </div>
+
+    <audio id="bg-music" src="music.mp3" loop></audio>
+
 
     <script>
-        // JavaScript (Điều khiển)
+        const body = document.body;
+        const loadingScreen = document.getElementById('loading-screen');
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const mainContent = document.getElementById('main-content');
+        const envelopeWrapper = document.getElementById('envelope-wrapper');
+        const cardModal = document.getElementById('card-modal');
+        const closeButton = document.getElementById('close-button');
+        const typingText = document.getElementById('typing-text');
+        const wishesList = document.getElementById('wishes-list');
+        const bgMusic = document.getElementById('bg-music');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const muteBtn = document.getElementById('mute-btn');
+        const heartsContainer = document.getElementById('hearts-container');
+        const starsContainer = document.getElementById('stars-container');
 
-        // === LẤY CÁC PHẦN TỬ ===
-        var scene1 = document.getElementById("scene1-rose");
-        var scene2 = document.getElementById("scene2-envelope");
-        var modal = document.getElementById("myModal");
-        var openModalBtn = document.getElementById("openModalBtn");
-        var closeModalBtn = document.getElementById("closeCard");
+        const letterContent = "người phụ nữ tuyệt vời, Nhân dịp ngày Quốc tế Phụ nữ 20/10, tôi xin gửi đến bạn những lời chúc tốt đẹp nhất! Mỗi người phụ nữ là một bông hoa tuyệt đẹp, tô điểm cho cuộc sống này thêm rực rỡ.";
+        let i = 0;
+        let speed = 50; 
 
-        // === ĐIỀU KHIỂN CHUYỂN CẢNH ===
+        // 1. Logic màn hình Loading
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }, 2000);
 
-        // 1. Bấm vào hoa (Scene 1) -> Chuyển sang Scene 2
-        scene1.onclick = function () {
-            scene1.style.opacity = '0'; // Mờ dần
+        // 2. Logic nút Bắt đầu
+        startButton.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            body.style.background = 'var(--bg-main)';
+            
+            bgMusic.play().catch(e => console.log(e));
+            playPauseBtn.textContent = '⏸️';
+            
+            starsContainer.classList.add('hidden');
+            heartsContainer.classList.remove('hidden');
+            if (heartsContainer.children.length === 0) {
+                 createHeartParticles();
+            }
+        });
+
+        // 3. Logic mở thư
+        envelopeWrapper.addEventListener('click', () => {
+            if (envelopeWrapper.classList.contains('open')) return;
+            
+            envelopeWrapper.classList.add('open');
+            body.style.background = 'var(--bg-dark)';
+            
+            heartsContainer.classList.add('hidden');
+            starsContainer.classList.remove('hidden');
+            if (starsContainer.children.length === 0) {
+                createSparkleParticles();
+            }
+
             setTimeout(() => {
-                scene1.classList.add('hidden'); // Ẩn đi
-                scene2.classList.remove('hidden'); // Hiện ra
-                scene2.style.opacity = '1'; // Hiện dần
-            }, 500); // 0.5 giây
-        }
-
-        // 2. Bấm vào phong bì (Scene 2) -> Mở Tấm thiệp (Modal)
-        openModalBtn.onclick = function () {
-            modal.classList.remove("hidden");
-            modal.style.display = 'flex';
-            startTyping(); // Bắt đầu gõ chữ
-        }
-
-        // 3. Đóng Tấm thiệp
-        closeModalBtn.onclick = function () {
-            modal.classList.add("hidden");
-            modal.style.display = 'none';
-        }
-        window.onclick = function (event) {
-            // Nếu bấm ra ngoài nền mờ
-            if (event.target == modal) {
-                modal.classList.add("hidden");
-                modal.style.display = 'none';
-            }
-        }
-
-        // === HIỆU ỨNG GÕ CHỮ (Lời chúc dài của bạn) ===
-        var textToType = "Ngày 20/10 là dịp đặc biệt để tôn vinh và gửi lời tri ân đến những người phụ nữ Việt Nam – những bông hoa tươi đẹp luôn mang đến yêu thương, hi sinh và nguồn cảm hứng trong cuộc sống. Lời chúc 20/10 không chỉ là những câu nói đơn giản, mà còn chứa đựng sự trân trọng và biết ơn sâu sắc dành cho mẹ, cô, chị, hay bạn gái – những người đã và đang làm cho thế giới quanh ta trở nên tốt đẹp hơn. Đó là lời nhắn gửi yêu thương, mong họ luôn mạnh mẽ, hạnh phúc và tự tin tỏa sáng trên con đường của mình. Dù chỉ là những lời chúc nhỏ bé, nhưng nó mang ý nghĩa lớn lao – giúp lan tỏa niềm vui, gắn kết tình cảm và làm cho ngày 20/10 trở nên thật ấm áp và ý nghĩa";
-        var speed = 30; // Tốc độ gõ (ms)
-        var i = 0;
-
-        function startTyping() {
-            i = 0; // Reset lại
-            document.getElementById("typing-text").innerHTML = ""; // Xóa chữ cũ
-            typeWriter();
-        }
-
+                cardModal.classList.remove('hidden');
+                
+                typingText.innerHTML = '';
+                wishesList.classList.remove('visible');
+                typingText.classList.remove('done');
+                i = 0;
+                typeWriter();
+            }, 1000);
+        });
+        
+        // 4. Logic gõ chữ
         function typeWriter() {
-            if (i < textToType.length) {
-                document.getElementById("typing-text").innerHTML += textToType.charAt(i);
+            if (i < letterContent.length) {
+                typingText.innerHTML += letterContent.charAt(i);
                 i++;
-                setTimeout(typeWriter, speed); 
+                setTimeout(typeWriter, speed);
+            } else {
+                typingText.classList.add('done');
+                wishesList.classList.add('visible');
             }
         }
 
-        // === HIỆU ỨNG CHỮ TRÁI TIM ===
-        function setupArcText() {
-            var textTop = "Happy Vietnamese Women's Day";
-            var textBottom = "From TIENDEV With 20/10!";
-            var arcTopEl = document.getElementById('arc-text-top');
-            var arcBottomEl = document.getElementById('arc-text-bottom');
+        // 5. Logic đóng thiệp
+        closeButton.addEventListener('click', () => {
+            cardModal.classList.add('hidden');
+            envelopeWrapper.classList.remove('open');
+            body.style.background = 'var(--bg-main)';
+            
+            starsContainer.classList.add('hidden');
+            heartsContainer.classList.remove('hidden');
+        });
 
-            var radiusTop = 180; 
-            var angleStepTop = 10;
-            var startAngleTop = -135; 
-
-            textTop.split('').forEach((char, idx) => {
-                var angle = startAngleTop + (idx * angleStepTop);
-                var span = document.createElement('span');
-                span.innerText = char;
-                span.style.transform = `rotate(${angle}deg) translate(0, -${radiusTop}px)`;
-                arcTopEl.appendChild(span);
-            });
-
-            var radiusBottom = 180; 
-            var angleStepBottom = 10;
-            var startAngleBottom = 45; 
-
-            textBottom.split('').forEach((char, idx) => {
-                var angle = startAngleBottom + (idx * angleStepBottom);
-                var span = document.createElement('span');
-                span.innerText = char;
-                span.style.transform = `rotate(${angle}deg) translate(0, -${radiusBottom}px) rotate(180deg)`;
-                arcBottomEl.appendChild(span);
-            });
+        // 6. Logic điều khiển nhạc
+        playPauseBtn.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                playPauseBtn.textContent = '⏸️';
+            } else {
+                bgMusic.pause();
+                playPauseBtn.textContent = '▶️';
+            }
+        });
+        muteBtn.addEventListener('click', () => {
+            bgMusic.muted = !bgMusic.muted;
+            muteBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
+        });
+        
+        // 7. Logic tạo hạt TIM RƠI (nền hồng)
+        function createHeartParticles() {
+            heartsContainer.innerHTML = ''; 
+            for (let i = 0; i < 60; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const type = Math.random();
+                if (type > 0.66) {
+                    particle.classList.add('heart');
+                } else if (type > 0.33) {
+                     particle.classList.add('circle');
+                     const size = Math.random() * 10 + 5;
+                     particle.style.width = `${size}px`;
+                     particle.style.height = `${size}px`;
+                } else {
+                     const size = Math.random() * 5 + 2;
+                     particle.style.width = `${size}px`;
+                     particle.style.height = `${size}px`;
+                     particle.style.backgroundColor = 'white';
+                     particle.style.opacity = '0.7';
+                }
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                
+                const xEnd = (Math.random() - 0.5) * 30; 
+                particle.style.setProperty('--x-end', `${xEnd}vw`);
+                
+                particle.style.animationName = 'float-down'; 
+                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                particle.style.animationIterationCount = 'infinite';
+                particle.style.animationTimingFunction = 'linear';
+                
+                heartsContainer.appendChild(particle);
+            }
         }
+        
+        // 8. Logic tạo SAO LẤP LÁNH (nền tối) - *** ĐÃ SỬA ***
+        function createSparkleParticles() {
+            starsContainer.innerHTML = '';
+            for (let i = 0; i < 60; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
 
-        // Chạy hàm này khi tải trang
-        setupArcText();
+                if (Math.random() > 0.5) {
+                    particle.classList.add('sparkle-heart');
+                } else {
+                    particle.classList.add('star');
+                    particle.style.fontSize = `${Math.random() * 10 + 5}px`;
+                }
+
+                particle.style.top = `${Math.random() * 100}vh`;
+                particle.style.left = `${Math.random() * 100}vw`;
+                
+                // --- PHẦN SỬA LỖI ---
+                // Gán đầy đủ thuộc tính animation bằng JS
+                particle.style.animationName = 'twinkle';
+                particle.style.animationDelay = `${Math.random() * 2}s`;
+                particle.style.animationDuration = `${Math.random() * 1 + 1}s`; // 1-2s
+                particle.style.animationIterationCount = 'infinite';
+                particle.style.animationDirection = 'alternate';
+                // --- KẾT THÚC PHẦN SỬA ---
+
+                starsContainer.appendChild(particle);
+            }
+        }
 
     </script>
 </body>
-
 </html>
