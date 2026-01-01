@@ -1,583 +1,228 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chúc Mừng Ngày Phụ Nữ!</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-
+    <title>Xuân Bính Ngọ 2026 - Gửi Trọn Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-start: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); /* Nền đỏ gradient */
-            --bg-main: #fbe0e6; /* Nền hồng nhạt cho bao thư */
-            --bg-dark: #2c3e50; /* Nền tối khi mở thiệp */
-            
-            --envelope-color: #ffb6c1;
-            --envelope-flap-color: #ff9a9e;
-            --card-color: #ffffff;
-            --font-cursive: 'Great Vibes', cursive;
+            --gold: #d4af37; --red: #e63946; --pink-bg: #ffe5ec;
+            --sakura: #ffb7c5; --text-dark: #8d1b24;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            transition: background 1s ease;
-            background: var(--bg-start);
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: var(--pink-bg);
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .hidden {
-            display: none !important;
+        canvas { display: block; position: absolute; top: 0; left: 0; }
+
+        .ui-layer {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; text-align: center; width: 90%;
+            transition: all 0.8s ease;
         }
 
-        /* 0. Màn hình Loading */
-        #loading-screen {
-            color: white;
-            font-size: 1.2rem;
-            text-align: center;
-        }
-        #loading-screen p {
-            opacity: 0;
-            animation: fadeIn 1s forwards;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 30px; padding: 40px;
+            box-shadow: 0 20px 40px rgba(255, 183, 197, 0.4);
+            display: inline-block;
         }
 
-        /* 1. Màn hình Bắt đầu */
-        #start-screen {
-            text-align: center;
-            color: white;
-            animation: fadeIn 0.5s;
-        }
-        #start-screen h1 {
-            font-family: var(--font-cursive);
-            font-size: 5rem;
-            font-weight: normal;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            margin-bottom: 0;
-        }
-        #start-button {
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 25px;
-            background-color: white;
-            color: var(--envelope-flap-color);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        #start-button:hover {
-            transform: scale(1.1);
+        .sub-text {
+            color: var(--red); font-size: 1.5rem;
+            font-family: 'Dancing Script', cursive;
+            margin-bottom: 10px; font-weight: bold;
         }
 
-        /* 2. Màn hình chính */
-        #main-content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #music-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-        }
-        #music-controls button {
-            background: rgba(255, 255, 255, 0.5);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-left: 10px;
+        .year-container {
+            font-size: clamp(3.5rem, 15vw, 8rem);
+            font-weight: 900; display: flex;
+            justify-content: center; align-items: center;
+            color: var(--red); text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
         }
 
-        /* --- HIỆU ỨNG HẠT --- */
-        .particle-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
+        #digit-change { position: relative; display: inline-block; width: 0.7em; height: 1.2em; }
+        .num { position: absolute; top: 0; left: 0; width: 100%; transition: all 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .num-5 { opacity: 1; transform: scale(1); }
+        .num-6 { opacity: 0; color: var(--gold); transform: scale(0.5) translateY(30px); }
+        .leaped .num-5 { opacity: 0; transform: scale(1.5) rotate(15deg) translateY(-50px); filter: blur(5px); }
+        .leaped .num-6 { opacity: 1; transform: scale(1) translateY(0); filter: drop-shadow(0 0 15px var(--gold)); }
+
+        .btn-action {
+            padding: 15px 35px; background: var(--red); border: none; color: white;
+            border-radius: 50px; cursor: pointer; font-weight: bold;
+            font-size: 0.9rem; box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
+            transition: 0.3s; font-family: inherit;
+        }
+        .btn-action:hover { transform: translateY(-3px) scale(1.05); background: #c1121f; }
+
+        #btn-next { display: none; background: transparent; border: 2px solid var(--red); color: var(--red); margin-top: 20px; }
+
+        #wish-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--pink-bg); z-index: 100;
+            display: none; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; opacity: 0; transition: opacity 1s;
         }
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-        }
-        
-        /* Hạt loại 1: Tim rơi (Nền hồng) */
-        .particle.heart {
-            background-color: transparent;
-            font-size: 20px;
-        }
-        .particle.heart::before {
-            content: '❤️';
-            color: #ff4757;
-        }
-        .particle.circle {
-            background-color: #ff9a9e;
-            opacity: 0.5;
-        }
-
-        /* Hạt loại 2: Sao lấp lánh (Nền tối) */
-        .particle.star {
-            color: #ffd700;
-            font-size: 10px;
-            /* --- CSS SỬA ---: Xóa 'animation' khỏi đây, JS sẽ xử lý */
-        }
-        .particle.star::before {
-            content: '✦';
-        }
-        .particle.sparkle-heart {
-            font-size: 20px;
-            /* --- CSS SỬA ---: Xóa 'animation' khỏi đây, JS sẽ xử lý */
-        }
-         .particle.sparkle-heart::before {
-            content: '❤️';
-            color: #ff4757;
-            text-shadow: 0 0 5px #ff4757;
-         }
-        
-        /* Bao thư */
-        #envelope-wrapper {
-            position: relative;
-            z-index: 5;
-            cursor: pointer;
-        }
-        #envelope {
-            position: relative;
-            width: 220px;
-            height: 150px;
-            background-color: var(--envelope-color);
-            border-radius: 5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.5s;
-        }
-        #envelope-wrapper:hover #envelope {
-            transform: scale(1.1);
-        }
-        .flap {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 110px solid transparent;
-            border-right: 110px solid transparent;
-            border-top: 80px solid var(--envelope-flap-color);
-            top: 0;
-            left: 0;
-            z-index: 3;
-            transform-origin: top center;
-            transition: transform 0.5s ease-in-out;
-        }
-        .letter {
-            position: absolute;
-            background-color: white;
-            width: 200px;
-            height: 130px;
-            top: 10px;
-            left: 10px;
-            border-radius: 5px;
-            z-index: 1;
-            transition: transform 0.5s ease-in-out;
-        }
-        #envelope-wrapper.open .flap {
-            transform: rotateX(180deg);
-            z-index: 0;
-        }
-        #envelope-wrapper.open .letter {
-            transform: translateY(-80px);
-        }
-
-        /* 3. Thiệp (Modal) */
-        #card-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .card-content {
-            background-color: var(--card-color);
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 80%;
-            max-width: 500px;
-            text-align: center;
-            position: relative;
-            z-index: 101;
-            transform: scale(0.5);
-            transition: transform 0.5s;
-        }
-        #card-modal:not(.hidden) {
-            opacity: 1;
-        }
-        #card-modal:not(.hidden) .card-content {
-            transform: scale(1);
-        }
-        #close-button {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2rem;
-            color: #aaa;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        #close-button:hover {
-            color: #ff0000;
-        }
-        .card-content h2 {
-            font-family: var(--font-cursive);
-            font-size: 3rem;
-            font-weight: normal;
-            color: #ff4757;
-            margin-top: 10px;
-            margin-bottom: 5px;
-        }
-        .card-content .date {
-            font-size: 0.9rem;
-            color: #555;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-        .greeting {
-            font-size: 1.1rem;
-            color: #333;
-            text-align: left;
-            margin: 0;
-        }
-
-        /* Hiệu ứng gõ chữ */
         #typing-text {
-            font-size: 1.1rem;
-            color: #333;
-            min-height: 120px;
-            border-right: 3px solid #333;
-            animation: blinkCursor 0.7s infinite;
-            white-space: pre-wrap;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        #typing-text.done {
-            border-right: none;
-            animation: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem; color: var(--text-dark);
+            max-width: 85%; margin-top: 25px; line-height: 1.8; font-weight: 500;
         }
 
-        /* Danh sách lời chúc */
-        .wishes-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-            opacity: 0;
-            transition: opacity 1s;
-        }
-        .wishes-list.visible {
-            opacity: 1;
-        }
-        .wishes-list li {
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-        }
-        .wishes-list li::before {
-            content: '';
-            font-size: 1.2rem;
-            margin-right: 10px;
-        }
-        .wishes-list li:nth-child(1)::before { content: '🌸'; }
-        .wishes-list li:nth-child(2)::before { content: '🌟'; }
-        .wishes-list li:nth-child(3)::before { content: '💖'; }
-        .wishes-list li:nth-child(4)::before { content: '☀️'; }
+        .word-fade { display: inline-block; opacity: 0; transform: translateY(15px); animation: cleanAppear 0.6s ease forwards; }
+        @keyframes cleanAppear { to { opacity: 1; transform: translateY(0); } }
 
-        .signature {
-            text-align: right;
-            margin-top: 20px;
-            font-style: italic;
-            color: #555;
+        .search-container {
+            margin-top: 30px; display: none; align-items: center;
+            background: white; border-radius: 24px; padding: 5px 20px;
+            width: 80%; max-width: 500px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #dfe1e5; animation: slideUp 0.5s ease;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes blinkCursor {
-            from { border-right-color: #333; }
-            to { border-right-color: transparent; }
-        }
-        
-        /* Keyframe cho tim rơi */
-        @keyframes float-down {
-            0% {
-                transform: translateY(-10vh) translateX(0) scale(1);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(100vh) translateX(var(--x-end)) scale(0.8);
-                opacity: 0;
-            }
-        }
-        
-        /* Keyframe cho sao lấp lánh */
-        @keyframes twinkle {
-            from { opacity: 0; transform: scale(0.5); }
-            to { opacity: 1; transform: scale(1.2); }
-        }
-
+        .search-input { flex: 1; border: none; outline: none; padding: 12px; font-size: 1rem; font-family: 'Montserrat', sans-serif; }
+        .btn-group { margin-top: 40px; display: flex; gap: 15px; opacity: 0; transition: opacity 1s ease; }
+        .heart { color: var(--red); font-size: 3rem; animation: beat 1s infinite; }
+        @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
     </style>
 </head>
 <body>
 
-    <div class="particle-container hidden" id="hearts-container"></div>
-    
-    <div class="particle-container hidden" id="stars-container"></div>
+    <canvas id="sakuraCanvas"></canvas>
 
-
-    <div id="loading-screen">
-        <p>Đang chuẩn bị điều bất ngờ...</p>
-    </div>
-
-    <div id="start-screen" class="hidden">
-        <h1>Happy Women's Day</h1>
-        <p>Chạm để mở món quà đặc biệt</p>
-        <button id="start-button">Bắt đầu</button>
-    </div>
-
-    <div id="main-content" class="hidden">
-        <div id="music-controls">
-            <button id="play-pause-btn">▶️</button>
-            <button id="mute-btn">🔊</button>
-        </div>
-        <div id="envelope-wrapper">
-            <div id="envelope">
-                <div class="letter"></div>
-                <div class="flap"></div>
+    <div class="ui-layer" id="main-ui">
+        <div class="glass-card" id="main-card">
+            <p class="sub-text" id="lunar-year">Xuân Ất Tỵ 2025</p>
+            <div class="year-container">
+                <span>202</span>
+                <div id="digit-change">
+                    <span class="num num-5">5</span>
+                    <span class="num num-6">6</span>
+                </div>
             </div>
+            <button class="btn-action" id="btn-trigger" onclick="startLeap()">MỞ CỬA 2026</button>
+            <br>
+            <button class="btn-action" id="btn-next" onclick="showLoveMessage()">GỬI TRỌN YÊU THƯƠNG →</button>
         </div>
     </div>
 
-    <div id="card-modal" class="hidden">
-        <div class="card-content">
-            <span id="close-button">&times;</span>
-            
-            <h2>Happy Women's Day 2025! 💝</h2>
-            <p class="date">Ngày 20 tháng 10 năm 2025</p>
-            
-            <p class="greeting">Thân gửi</p>
-
-            <p id="typing-text"></p>
-            
-            <ul class="wishes-list" id="wishes-list">
-                <li>Chúc bạn luôn xinh đẹp, rạng ngời như những đóa hoa tươi thắm</li>
-                <li>Chúc bạn thành công rực rỡ trên con đường sự nghiệp</li>
-                <li>Chúc bạn tìm được hạnh phúc trọn vẹn trong tình yêu</li>
-                <li>Chúc bạn luôn vui vẻ, tràn đầy năng lượng mỗi ngày</li>
-            </ul>
-
-            <p class="signature">
-                With love and appreciation,<br>
-                TIEDNEV
-            </p>
+    <div id="wish-overlay">
+        <div class="heart">❤</div>
+        <div id="typing-text"></div>
+        
+        <div class="btn-group" id="wish-btns">
+            <button class="btn-action" style="background: var(--gold);" onclick="location.reload()">QUAY LẠI</button>
+            <button class="btn-action" onclick="openSearch()">GỬI LỜI</button>
         </div>
+
+        <form id="my-form" action="https://formspree.io/f/xjgkvnak" method="POST" class="search-container">
+            <span style="color:#9aa0a6">🔍</span>
+            <input type="text" name="message" class="search-input" placeholder="..." required>
+            <button type="submit" class="btn-action" style="padding: 10px 20px; font-size: 0.8rem;">GỬI</button>
+        </form>
+        <p id="status" style="margin-top: 20px; color: var(--text-dark); display: none; font-weight: bold;"></p>
     </div>
 
-    <audio id="bg-music" src="music.mp3" loop></audio>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
-        const body = document.body;
-        const loadingScreen = document.getElementById('loading-screen');
-        const startScreen = document.getElementById('start-screen');
-        const startButton = document.getElementById('start-button');
-        const mainContent = document.getElementById('main-content');
-        const envelopeWrapper = document.getElementById('envelope-wrapper');
-        const cardModal = document.getElementById('card-modal');
-        const closeButton = document.getElementById('close-button');
-        const typingText = document.getElementById('typing-text');
-        const wishesList = document.getElementById('wishes-list');
-        const bgMusic = document.getElementById('bg-music');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const heartsContainer = document.getElementById('hearts-container');
-        const starsContainer = document.getElementById('stars-container');
-
-        const letterContent = "người phụ nữ tuyệt vời, Nhân dịp ngày Quốc tế Phụ nữ 20/10, tôi xin gửi đến bạn những lời chúc tốt đẹp nhất! Mỗi người phụ nữ là một bông hoa tuyệt đẹp, tô điểm cho cuộc sống này thêm rực rỡ.";
-        let i = 0;
-        let speed = 50; 
-
-        // 1. Logic màn hình Loading
-        setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-        }, 2000);
-
-        // 2. Logic nút Bắt đầu
-        startButton.addEventListener('click', () => {
-            startScreen.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            body.style.background = 'var(--bg-main)';
-            
-            bgMusic.play().catch(e => console.log(e));
-            playPauseBtn.textContent = '⏸️';
-            
-            starsContainer.classList.add('hidden');
-            heartsContainer.classList.remove('hidden');
-            if (heartsContainer.children.length === 0) {
-                 createHeartParticles();
+        const canvas = document.getElementById('sakuraCanvas');
+        const ctx = canvas.getContext('2d');
+        let petals = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        class Petal {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 7 + 5;
+                this.speed = Math.random() * 2 + 1;
+                this.angle = Math.random() * Math.PI * 2;
             }
-        });
-
-        // 3. Logic mở thư
-        envelopeWrapper.addEventListener('click', () => {
-            if (envelopeWrapper.classList.contains('open')) return;
-            
-            envelopeWrapper.classList.add('open');
-            body.style.background = 'var(--bg-dark)';
-            
-            heartsContainer.classList.add('hidden');
-            starsContainer.classList.remove('hidden');
-            if (starsContainer.children.length === 0) {
-                createSparkleParticles();
+            draw() {
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+                ctx.beginPath(); ctx.ellipse(0, 0, this.size, this.size/2, 0, 0, Math.PI * 2);
+                ctx.fillStyle = "#ffb7c5"; ctx.fill(); ctx.restore();
             }
+            update() { this.y += this.speed; if (this.y > canvas.height) this.y = -10; }
+        }
+        for (let i = 0; i < 60; i++) petals.push(new Petal());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
 
+        function startLeap() {
+            document.getElementById('main-card').classList.add('leaped');
+            document.getElementById('btn-trigger').style.display = 'none';
             setTimeout(() => {
-                cardModal.classList.remove('hidden');
-                
-                typingText.innerHTML = '';
-                wishesList.classList.remove('visible');
-                typingText.classList.remove('done');
-                i = 0;
-                typeWriter();
+                document.getElementById('lunar-year').innerText = "Mừng Xuân Bính Ngọ 2026";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                document.getElementById('btn-next').style.display = 'inline-block';
             }, 1000);
-        });
-        
-        // 4. Logic gõ chữ
-        function typeWriter() {
-            if (i < letterContent.length) {
-                typingText.innerHTML += letterContent.charAt(i);
-                i++;
-                setTimeout(typeWriter, speed);
+        }
+
+        function showLoveMessage() {
+            const overlay = document.getElementById('wish-overlay');
+            const mainUi = document.getElementById('main-ui');
+            const typingSpace = document.getElementById('typing-text');
+            const btnGroup = document.getElementById('wish-btns');
+            const message = "Mình chúc cô gái của mình luôn cutee xinh gái và luôn yêu thương chính bản thân mình hơn. Biết tự lo mỗi buổi sáng, biết làm việc nhà giúp cho bố mẹ. Hãy luôn hạnh phúc bên gia đình và tôn trọng những người thân trong gia đình. Phải luôn tiến bước trên con đường học tập, phấn đấu cho tương lai và đầu tư vào việc học thật tốt nhé. Nhớ nhé: việc học là việc cả đời, còn tình yêu bây giờ chưa giúp được gì nhiều đâu. Vậy nên Kim Ngân yêu dấu hãy tiến bước và yêu thương bản thân mình nhiều lên nhé. Aye ❤️";
+            mainUi.style.opacity = '0';
+            setTimeout(() => {
+                mainUi.style.display = 'none'; overlay.style.display = 'flex';
+                setTimeout(() => { 
+                    overlay.style.opacity = '1'; typingSpace.innerHTML = "";
+                    const words = message.split(" ");
+                    words.forEach((word, index) => {
+                        const span = document.createElement('span');
+                        span.className = 'word-fade'; span.innerHTML = word + "&nbsp;";
+                        span.style.animationDelay = (index * 0.2) + "s";
+                        typingSpace.appendChild(span);
+                    });
+                    setTimeout(() => { btnGroup.style.opacity = '1'; }, 3000);
+                }, 100);
+            }, 800);
+        }
+
+        function openSearch() {
+            document.getElementById('wish-btns').style.display = 'none';
+            document.getElementById('my-form').style.display = 'flex';
+        }
+
+        var form = document.getElementById("my-form");
+        async function handleSubmit(event) {
+          event.preventDefault();
+          var status = document.getElementById("status");
+          var data = new FormData(event.target);
+          fetch(event.target.action, {
+            method: form.method,
+            body: data,
+            headers: { 'Accept': 'application/json' }
+          }).then(response => {
+            if (response.ok) {
+              status.innerHTML = "Cảm ơn Kim Ngân, mình đã nhận được rồi! ❤️";
+              status.style.display = "block";
+              form.style.display = "none";
             } else {
-                typingText.classList.add('done');
-                wishesList.classList.add('visible');
+              status.innerHTML = "Lỗi! Bạn nhớ vào Gmail xác nhận Formspree đã nhé.";
+              status.style.display = "block";
             }
+          });
         }
-
-        // 5. Logic đóng thiệp
-        closeButton.addEventListener('click', () => {
-            cardModal.classList.add('hidden');
-            envelopeWrapper.classList.remove('open');
-            body.style.background = 'var(--bg-main)';
-            
-            starsContainer.classList.add('hidden');
-            heartsContainer.classList.remove('hidden');
-        });
-
-        // 6. Logic điều khiển nhạc
-        playPauseBtn.addEventListener('click', () => {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                playPauseBtn.textContent = '⏸️';
-            } else {
-                bgMusic.pause();
-                playPauseBtn.textContent = '▶️';
-            }
-        });
-        muteBtn.addEventListener('click', () => {
-            bgMusic.muted = !bgMusic.muted;
-            muteBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
-        });
-        
-        // 7. Logic tạo hạt TIM RƠI (nền hồng)
-        function createHeartParticles() {
-            heartsContainer.innerHTML = ''; 
-            for (let i = 0; i < 60; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                const type = Math.random();
-                if (type > 0.66) {
-                    particle.classList.add('heart');
-                } else if (type > 0.33) {
-                     particle.classList.add('circle');
-                     const size = Math.random() * 10 + 5;
-                     particle.style.width = `${size}px`;
-                     particle.style.height = `${size}px`;
-                } else {
-                     const size = Math.random() * 5 + 2;
-                     particle.style.width = `${size}px`;
-                     particle.style.height = `${size}px`;
-                     particle.style.backgroundColor = 'white';
-                     particle.style.opacity = '0.7';
-                }
-                
-                particle.style.left = `${Math.random() * 100}vw`;
-                
-                const xEnd = (Math.random() - 0.5) * 30; 
-                particle.style.setProperty('--x-end', `${xEnd}vw`);
-                
-                particle.style.animationName = 'float-down'; 
-                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
-                particle.style.animationDelay = `${Math.random() * 10}s`;
-                particle.style.animationIterationCount = 'infinite';
-                particle.style.animationTimingFunction = 'linear';
-                
-                heartsContainer.appendChild(particle);
-            }
-        }
-        
-        // 8. Logic tạo SAO LẤP LÁNH (nền tối) - *** ĐÃ SỬA ***
-        function createSparkleParticles() {
-            starsContainer.innerHTML = '';
-            for (let i = 0; i < 60; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-
-                if (Math.random() > 0.5) {
-                    particle.classList.add('sparkle-heart');
-                } else {
-                    particle.classList.add('star');
-                    particle.style.fontSize = `${Math.random() * 10 + 5}px`;
-                }
-
-                particle.style.top = `${Math.random() * 100}vh`;
-                particle.style.left = `${Math.random() * 100}vw`;
-                
-                // --- PHẦN SỬA LỖI ---
-                // Gán đầy đủ thuộc tính animation bằng JS
-                particle.style.animationName = 'twinkle';
-                particle.style.animationDelay = `${Math.random() * 2}s`;
-                particle.style.animationDuration = `${Math.random() * 1 + 1}s`; // 1-2s
-                particle.style.animationIterationCount = 'infinite';
-                particle.style.animationDirection = 'alternate';
-                // --- KẾT THÚC PHẦN SỬA ---
-
-                starsContainer.appendChild(particle);
-            }
-        }
-
+        form.addEventListener("submit", handleSubmit);
     </script>
 </body>
 </html>
